@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>RemoteMessage · 远程消息</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-2: #f0f2f8;
+      --text: #1b1d24;
+      --text-2: #5f6573;
+      --primary: #3758d6;
+      --primary-hover: #2c48b8;
+      --on-primary: #ffffff;
+      --border: #d9dde8;
+      --success: #157a45;
+      --error: #c5333f;
+      --shadow: 0 10px 32px rgba(24, 36, 80, 0.08);
+      --radius: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161c;
+        --surface: #1e212a;
+        --surface-2: #282c37;
+        --text: #e9ebf2;
+        --text-2: #a2a8b8;
+        --primary: #7d9bff;
+        --primary-hover: #96afff;
+        --on-primary: #101627;
+        --border: #363b48;
+        --success: #7bd6a1;
+        --error: #ff9aa3;
+        --shadow: 0 10px 32px rgba(0, 0, 0, 0.32);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: clamp(16px, 5vw, 56px) 16px;
+      line-height: 1.55;
+    }
+
+    .app { width: 100%; max-width: 640px; }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-icon {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .hero-icon svg { width: 26px; height: 26px; fill: currentColor; }
+
+    h1 { font-size: 1.5rem; margin: 0; font-weight: 650; letter-spacing: -0.02em; }
+    .subtitle { margin: 2px 0 0; color: var(--text-2); font-size: 0.875rem; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 4vw, 28px);
+    }
+
+    .field { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 7px;
+    }
+
+    textarea, input[type="text"], input[type="password"], select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9375rem;
+      padding: 11px 13px;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+    }
+
+    .field-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--text-2);
+    }
+
+    details {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      background: transparent;
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text-2);
+      user-select: none;
+    }
+
+    details[open] summary { margin-bottom: 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: var(--text-2);
+      margin-top: 8px;
+    }
+
+    .check input { accent-color: var(--primary); width: 16px; height: 16px; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background .18s, transform .1s, opacity .18s;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      padding: 11px 22px;
+      background: var(--primary);
+      color: var(--on-primary);
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+    .btn-primary svg { width: 17px; height: 17px; fill: currentColor; }
+
+    .hint { font-size: 0.8rem; color: var(--text-2); }
+    .status { font-size: 0.875rem; min-height: 1.4em; }
+    .status.ok { color: var(--success); }
+    .status.err { color: var(--error); }
+
+    .section-title {
+      margin: 26px 0 10px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-2);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .history { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .history li {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.875rem;
+    }
+    .history time { color: var(--text-2); font-size: 0.75rem; white-space: nowrap; }
+    .history span { overflow-wrap: anywhere; }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 0.8rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1px 5px;
+    }
+
+    .api { font-size: 0.8125rem; color: var(--text-2); }
+    .api p { margin: 6px 0; }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero-icon { width: 42px; height: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="hero-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6v-5a7 7 0 0 0-5.5-6.83V3a1.5 1.5 0 0 0-3 0v1.17A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-4-2z"/></svg>
+      </div>
+      <div>
+        <h1>RemoteMessage</h1>
+        <p class="subtitle">向 ICC-CE 发送一条灵动通知并播放提示音</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="field">
+        <label for="content">消息内容</label>
+        <textarea id="content" maxlength="{{MAX_LENGTH}}" placeholder="输入要远程推送的消息…"></textarea>
+        <div class="field-meta">
+          <span>支持 Ctrl + Enter 快速发送</span>
+          <span id="counter">0 / {{MAX_LENGTH}}</span>
+        </div>
+      </div>
+
+      <details>
+        <summary>高级选项（标题 / 级别 / 提示音 / 令牌）</summary>
+        <div class="grid">
+          <div class="field">
+            <label for="title">通知标题（可选）</label>
+            <input type="text" id="title" placeholder="默认使用消息内容">
+          </div>
+          <div class="field">
+            <label for="message">通知副标题（可选）</label>
+            <input type="text" id="message" placeholder="默认 Important">
+          </div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="level">通知级别</label>
+            <select id="level">
+              <option value="warning">Warning · 警告</option>
+              <option value="info">Info · 信息</option>
+              <option value="success">Success · 成功</option>
+              <option value="error">Error · 错误</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="token">访问令牌（启用鉴权时必填）</label>
+            <input type="password" id="token" autocomplete="off" placeholder="X-API-Key">
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="sound" checked> 播放提示音</label>
+      </details>
+
+      <div class="actions">
+        <button id="send" class="btn-primary" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          <span id="sendText">发送通知</span>
+        </button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <h2 class="section-title">最近发送</h2>
+    <ul id="history" class="history" aria-live="polite"></ul>
+
+    <h2 class="section-title">API 调用示例</h2>
+    <section class="card api">
+      <p>快速发送：<code>GET /notice/你好</code></p>
+      <p>完整参数：</p>
+      <p><code>curl -X POST http://&lt;主机&gt;:23000/notice -H "Content-Type: application/json" -d '{"content":"你好","level":"info"}'</code></p>
+      <p>健康检查：<code>GET /health</code> · 若设置了令牌，请加上请求头 <code>X-API-Key: &lt;令牌&gt;</code></p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const content = $('content');
+      const title = $('title');
+      const message = $('message');
+      const level = $('level');
+      const token = $('token');
+      const sound = $('sound');
+      const sendBtn = $('send');
+      const sendText = $('sendText');
+      const status = $('status');
+      const counter = $('counter');
+      const history = $('history');
+      const maxLength = Number(content.getAttribute('maxlength')) || {{MAX_LENGTH}};
+      const tokenKey = 'remotemessage.token';
+      const recent = [];
+
+      token.value = localStorage.getItem(tokenKey) || '';
+
+      function updateCounter() {
+        counter.textContent = content.value.length + ' / ' + maxLength;
+      }
+
+      function showStatus(text, type) {
+        status.textContent = text;
+        status.className = 'status ' + (type || '');
+      }
+
+      function addHistory(text) {
+        recent.unshift({ text: text, time: new Date() });
+        if (recent.length > 5) recent.pop();
+        history.replaceChildren();
+        recent.forEach((item) => {
+          const li = document.createElement('li');
+          const time = document.createElement('time');
+          time.dateTime = item.time.toISOString();
+          time.textContent = item.time.toLocaleTimeString('zh-CN', { hour12: false });
+          const span = document.createElement('span');
+          span.textContent = item.text;
+          li.append(time, span);
+          history.appendChild(li);
+        });
+      }
+
+      async function sendNotice() {
+        const text = content.value.trim();
+        if (!text) {
+          showStatus('请先输入消息内容。', 'err');
+          content.focus();
+          return;
+        }
+
+        const payload = { content: text, playSound: sound.checked };
+        if (title.value.trim()) payload.title = title.value.trim();
+        if (message.value.trim()) payload.message = message.value.trim();
+        if (level.value) payload.level = level.value;
+
+        const headers = { 'Content-Type': 'application/json' };
+        const key = token.value.trim();
+        if (key) {
+          headers['X-API-Key'] = key;
+          localStorage.setItem(tokenKey, key);
+        } else {
+          localStorage.removeItem(tokenKey);
+        }
+
+        sendBtn.disabled = true;
+        sendText.textContent = '发送中…';
+        showStatus('');
+
+        try {
+          const res = await fetch('/notice', { method: 'POST', headers: headers, body: JSON.stringify(payload) });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+          showStatus('发送成功，通知已送达 ICC-CE。', 'ok');
+          addHistory(text);
+          content.value = '';
+          title.value = '';
+          message.value = '';
+          updateCounter();
+        } catch (err) {
+          showStatus('发送失败：' + err.message, 'err');
+        } finally {
+          sendBtn.disabled = false;
+          sendText.textContent = '发送通知';
+        }
+      }
+
+      content.addEventListener('input', updateCounter);
+      content.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          sendNotice();
+        }
+      });
+      sendBtn.addEventListener('click', sendNotice);
+      updateCounter();
+    })();
+  </script>
+</body>
+</html>

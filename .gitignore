@@ -1,0 +1,13 @@
+# 构建产物
+bin/
+obj/
+
+# 本地配置（含令牌）
+config.json
+
+# IDE / 编辑器
+.vs/
+.idea/
+*.user
+*.suo
+.DS_Store

@@ -1,15 +1,22 @@
 {
   "Id": "org.inkcanvas.remotemessage",
   "Name": "RemoteMessage",
-  "Version": "1.0.0",
-  "Description": "开放23000端口用于发送远程消息，webui: http://ip:23000",
+  "Version": "1.1.0",
+  "Description": "开放 HTTP 接口远程发送 ICC-CE 灵动通知，内置 WebUI、POST API、可选令牌鉴权与限流",
   "Author": "AstrZero",
   "EntranceAssembly": "RemoteMessagePlugin.dll",
   "ApiVersion": "1.10.0",
   "MinHostVersion": "1.7.19",
   "Icon": "icon.png",
+  "Url": "https://github.com/qyq007/ICCPlugin-RemoteMessage",
+  "SourceUrl": "https://github.com/qyq007/ICCPlugin-RemoteMessage",
   "Permissions": [
     "Network",
     "Notification"
+  ],
+  "Tags": [
+    "通知",
+    "远程",
+    "WebUI"
   ]
 }

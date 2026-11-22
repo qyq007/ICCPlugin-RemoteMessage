@@ -19,7 +19,7 @@ jobs:
       project: RemoteMessagePlugin.csproj
       plugin_id: org.inkcanvas.remotemessage
       plugin_name: RemoteMessage
-      plugin_description: '远程消息，使用ICCCE的灵动通知API'
-      create_release: true
-      release_tag: ${{ inputs.tag || github.ref_name }}
+      plugin_description: '远程消息，支持 WebUI、POST API、令牌鉴权与限流'
+      create_release: false
+      auto_release: true
     secrets: inherit
