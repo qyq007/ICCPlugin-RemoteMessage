@@ -1,0 +1,8 @@
+{
+  "Port": 23000,
+  "BindAddress": "*",
+  "Token": "",
+  "MaxContentLength": 2000,
+  "RateLimitPerMinute": 0,
+  "PlaySound": true
+}

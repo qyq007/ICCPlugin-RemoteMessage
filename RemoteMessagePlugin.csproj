@@ -7,13 +7,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <CreateIcpx>true</CreateIcpx>
     <RootNamespace>RemoteMessagePlugin</RootNamespace>
+    <!-- 本地开发时 SDK 仓库路径；也可通过 -p:InkCanvasPluginSdkDir=... 覆盖 -->
+    <InkCanvasPluginSdkDir Condition="'$(InkCanvasPluginSdkDir)' == ''">E:\Develop\community</InkCanvasPluginSdkDir>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="E:\Develop\community\InkCanvas.PluginSdk\InkCanvas.PluginSdk.csproj" />
+    <ProjectReference Include="$(InkCanvasPluginSdkDir)\InkCanvas.PluginSdk.csproj" />
   </ItemGroup>
 
-  <Import Project="E:\Develop\community\InkCanvas.PluginSdk\InkCanvas.PluginSdk.targets" />
+  <Import Project="$(InkCanvasPluginSdkDir)\InkCanvas.PluginSdk.targets"
+          Condition="Exists('$(InkCanvasPluginSdkDir)\InkCanvas.PluginSdk.targets')" />
+
+  <ItemGroup>
+    <EmbeddedResource Include="WebUI.html" LogicalName="RemoteMessagePlugin.WebUI.html" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Update="manifest.json">
@@ -24,6 +31,9 @@
     </None>
     <None Update="notify-normal-new.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="config.example.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
